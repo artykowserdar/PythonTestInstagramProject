@@ -1,11 +1,11 @@
-# main.py
 from fastapi import FastAPI, Path, HTTPException, Depends, Request, Header
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 import logging
 
-import config
+from dotenv import load_dotenv
+import os
 from services.parser import get_instagram_profile
 
 app = FastAPI()
@@ -17,6 +17,9 @@ app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+load_dotenv()
+API_KEY = os.getenv("API_KEY")
+
 
 def get_remote_ip(request: Request):
     client_host = request.client.host
@@ -24,7 +27,7 @@ def get_remote_ip(request: Request):
 
 
 async def api_key_auth(api_key: str = Header(None)):
-    if api_key != config.SECRET_KEY:
+    if api_key != API_KEY:
         raise HTTPException(status_code=401, detail="Invalid API key")
     return api_key
 

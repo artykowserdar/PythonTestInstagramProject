@@ -2,12 +2,18 @@ import httpx
 import json
 import redis
 import logging
+import os
 
 from fastapi import HTTPException
+from dotenv import load_dotenv
 
 logger = logging.getLogger(__name__)
 
-r = redis.Redis(host='localhost', port=6379, db=0, decode_responses=True)
+load_dotenv()
+REDIS_HOST = os.getenv("REDIS_HOST", "localhost")
+REDIS_PORT = os.getenv("REDIS_PORT", "6379")
+
+r = redis.Redis(host=REDIS_HOST, port=REDIS_PORT, db=0, decode_responses=True)
 
 
 async def get_instagram_profile(username: str):
